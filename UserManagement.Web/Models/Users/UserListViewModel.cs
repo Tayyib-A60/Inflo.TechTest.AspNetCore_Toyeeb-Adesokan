@@ -11,5 +11,6 @@ public class UserListItemViewModel
     public string? Forename { get; set; }
     public string? Surname { get; set; }
     public string? Email { get; set; }
+    public string? DOB { get; set; }
     public bool IsActive { get; set; }
 }

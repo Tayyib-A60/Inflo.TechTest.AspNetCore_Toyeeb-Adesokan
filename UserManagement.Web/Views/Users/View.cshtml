@@ -1,0 +1,12 @@
+﻿@model UserManagement.Web.Models.Users.UserListItemViewModel
+
+<div class="card">
+    <img src="" class="card-img-top" alt="Avatar">
+    <div class="card-body">
+        <h5 class="card-title">@Model.Forename @Model.Surname</h5>
+        <p class="card-text">
+            <strong>Email:</strong> @Model.Email <br>
+            @*<strong>Date of Birth:</strong> @Model.DOB?.ToString("MM/dd/yyyy")*@
+        </p>
+    </div>
+</div>

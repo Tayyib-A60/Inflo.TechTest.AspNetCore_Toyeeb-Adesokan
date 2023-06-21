@@ -38,6 +38,11 @@ public class DataContext : DbContext, IDataContext
         SaveChanges();
     }
 
+    public TEntity? Get<TEntity>(long id) where TEntity : class
+    {
+        return base.Find<TEntity>(id);
+    }
+
     public new void Update<TEntity>(TEntity entity) where TEntity : class
     {
         base.Update(entity);

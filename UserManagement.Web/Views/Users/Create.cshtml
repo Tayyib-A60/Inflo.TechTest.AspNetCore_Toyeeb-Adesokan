@@ -1,0 +1,14 @@
+﻿@model UserManagement.Web.Models.Users.CreateUserModel
+
+
+<h1>Create New User</h1>
+
+<div class="container">
+    <form method="post"
+          asp-controller="Users"
+          asp-action="Create">
+        @await Html.PartialAsync("_UserForm", Model)
+        <br/>
+        <button type="submit" class="btn btn-primary">Create</button>
+    </form>
+</div>
