@@ -8,4 +8,14 @@
     <ProjectReference Include="..\UserManagement.Services\UserManagement.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="MiddleWares\" />
+    <None Remove="Views\ActivityLog\" />
+    <None Remove="Models\Activity\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="MiddleWares\" />
+    <Folder Include="Views\ActivityLog\" />
+    <Folder Include="Models\Activity\" />
+  </ItemGroup>
 </Project>

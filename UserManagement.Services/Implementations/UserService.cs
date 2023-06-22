@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using UserManagement.Core;
 using UserManagement.Data;
 using UserManagement.Models;
 using UserManagement.Services.Domain.Interfaces;
 
 namespace UserManagement.Services.Domain.Implementations;
-
 public class UserService : IUserService
 {
     private readonly IDataContext _dataAccess;
@@ -19,12 +20,13 @@ public class UserService : IUserService
     /// <returns></returns>
     public IEnumerable<User> FilterByActive(bool isActive)
     {
-        throw new NotImplementedException();
+        var users = _dataAccess.GetAll<User>().Where(u => u.IsActive == isActive).ToList();
+        return users;
     }
 
     public IEnumerable<User> GetAll() => _dataAccess.GetAll<User>();
 
-    public void CreateUser(CreateUserDTO createUserDTO)
+    public async Task CreateUser(CreateUserDTO createUserDTO)
     {
         var user = new User
         {
@@ -34,20 +36,20 @@ public class UserService : IUserService
             IsActive = true,
             DateOfBirth = DateTime.Parse(createUserDTO.Date)
         };
-        _dataAccess.Create<User>(user);
+        await _dataAccess.CreateAsync<User>(user);
     }
 
-    public void DeleteUser(long id)
+    public async Task DeleteUser(long id)
     {
         var user = _dataAccess.Get<User>(id);
 
         if (user is not null)
         {
-            _dataAccess.Delete<User>(user);
+            await _dataAccess.DeleteAsync<User>(user);
         }
     }
 
-    public void UpdateUser(UpdateUserDTO updateUserDTO)
+    public async Task UpdateUser(UpdateUserDTO updateUserDTO)
     {
         var user = _dataAccess.Get<User>(updateUserDTO.Id);
 
@@ -60,12 +62,12 @@ public class UserService : IUserService
             user.IsActive = true;
             user.DateOfBirth = DateTime.Parse(updateUserDTO.Date);
 
-            _dataAccess.Update<User>(user);
+            await _dataAccess.UpdateAsync<User>(user);
         }
     }
 
-    public User? GetUser(long id)
+    public async Task<User?> GetUser(long id)
     {
-        return _dataAccess.Get<User>(id);
+        return await _dataAccess.GetAsync<User>(id);
     }
 }

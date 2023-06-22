@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using UserManagement.Core;
 using UserManagement.Models;
 
@@ -13,8 +14,8 @@ public interface IUserService
     /// <returns></returns>
     IEnumerable<User> FilterByActive(bool isActive);
     IEnumerable<User> GetAll();
-    void CreateUser(CreateUserDTO userDto);
-    void UpdateUser(UpdateUserDTO userDto);
-    void DeleteUser(long id);
-    User? GetUser(long id);
+    Task CreateUser(CreateUserDTO userDto);
+    Task UpdateUser(UpdateUserDTO userDto);
+    Task DeleteUser(long id);
+    Task<User?> GetUser(long id);
 }

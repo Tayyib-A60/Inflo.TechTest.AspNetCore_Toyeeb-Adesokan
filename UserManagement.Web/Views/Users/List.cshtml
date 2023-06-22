@@ -29,7 +29,7 @@
                         @item.Surname
                     </td>
                     <td>
-                        @item.DOB
+                        @item.DOB?.ToString()
                     </td>
                     <td>
                         @item.Email
@@ -107,7 +107,6 @@
             }
         }
 
-        // Hide the custom modal
         $('#deleteModal').modal('hide');
     }
 </script>

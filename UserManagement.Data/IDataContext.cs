@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace UserManagement.Data;
 
@@ -20,6 +21,8 @@ public interface IDataContext
     /// <returns></returns>
     void Create<TEntity>(TEntity entity) where TEntity : class;
 
+    Task CreateAsync<TEntity>(TEntity entity) where TEntity : class;
+
     /// <summary>
     /// Uodate an existing item matching the ID
     /// </summary>
@@ -28,7 +31,13 @@ public interface IDataContext
     /// <returns></returns>
     void Update<TEntity>(TEntity entity) where TEntity : class;
 
+    Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class;
+
     void Delete<TEntity>(TEntity entity) where TEntity : class;
 
+    Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class;
+
     TEntity? Get<TEntity>(long id) where TEntity : class;
+
+    Task<TEntity?> GetAsync<TEntity>(long id) where TEntity : class;
 }

@@ -1,0 +1,77 @@
+﻿@model UserManagement.Web.Models.Activity.ActivityListLogViewModel
+
+<h2>Activity List</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>RequestId</th>
+                <th>Path</th>
+                <th>Method</th>
+                <th>ResponseStatusCode</th>
+                <th style="width: 1px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <td>
+                        @item.Id
+                    </td>
+                    <td>
+                        @item.RequestId
+                    </td>
+                    <td>
+                        @item.Path
+                    </td>
+                    <td>
+                        @item.Method
+                    </td>
+                    <td>
+                        @item.ResponseStatusCode
+                    </td>
+                    <td>
+                        <div class="dropdown">
+                            <button type="button" class="btn btn-default">
+                                View
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+@{
+    int totalItems = Model.Count;
+    int pageSize = 10;
+    int totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
+    int currentPage = Context.Request.Query.ContainsKey("page") ? int.Parse(Context.Request.Query["page"].ToString()) : 1;
+
+
+    if (totalItems > pageSize)
+    {
+        <nav aria-label="Page navigation">
+            <ul class="pagination">
+                @if (currentPage > 1)
+                {
+                    <li class="page-item"><a class="page-link" asp-controller="activityLog" asp-action="List" asp-route-page="@(currentPage - 1)" asp-route-pageSize="@pageSize">Previous</a></li>
+                }
+
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(currentPage == i ? "active" : "")"><a class="page-link" asp-controller="activityLog" asp-action="List" asp-route-page="@i" asp-route-pageSize="@pageSize">@i</a></li>
+                }
+
+                @if (currentPage < totalPages)
+                {
+                    <li class="page-item"><a class="page-link" asp-controller="activityLog" asp-action="List" asp-route-page="@(currentPage + 1)" asp-route-pageSize="@pageSize">Next</a></li>
+                }
+            </ul>
+        </nav>
+    }
+}

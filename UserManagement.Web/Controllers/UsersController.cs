@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using UserManagement.Core;
 using UserManagement.Services.Domain.Interfaces;
 using UserManagement.Web.Models.Users;
@@ -14,12 +15,32 @@ public class UsersController : Controller
     [HttpGet("list")]
     public ViewResult List([FromQuery] UserListQuery filter)
     {
-        var model = GetUsers(filter.UserStateFilter);
+        var allUsers = new List<UserListItemViewModel>();
 
-        return View(model);
+        if (filter.UserStateFilter == UserStateFilter.All)
+        {
+            return View(GetUsers());
+        }
+
+        var filteredUsers = _userService
+            .FilterByActive(filter.UserStateFilter == UserStateFilter.Active ? true : false)
+            .Select(u => new UserListItemViewModel
+            {
+                Id = u.Id,
+                Forename = u.Forename,
+                Surname = u.Surname,
+                Email = u.Email,
+                IsActive = u.IsActive,
+                DOB = u.DateOfBirth is null ? "N/A" : u.DateOfBirth?.ToString()
+            }).OrderBy(u => u.Id).ToList();
+
+        return View(new UserListViewModel
+        {
+            Items = filteredUsers
+        });
     }
 
-    private UserListViewModel GetUsers(UserStateFilter filter)
+    private UserListViewModel GetUsers()
     {
         var items = _userService.GetAll().Select(p => new UserListItemViewModel
         {
@@ -28,20 +49,8 @@ public class UsersController : Controller
             Surname = p.Surname,
             Email = p.Email,
             IsActive = p.IsActive,
-            DOB = p.DateOfBirth is null ? "N/A" : p.DateOfBirth?.ToString("dd/mm/yyyy")
+            DOB = p.DateOfBirth is null ? "N/A" : p.DateOfBirth?.ToString()
         });
-
-        if(filter != UserStateFilter.All)
-        {
-            if(filter == UserStateFilter.Active)
-            {
-                items = items.Where(item => item.IsActive);
-            }
-            else if (filter == UserStateFilter.InActive)
-            {
-                items = items.Where(item => !item.IsActive);
-            }
-        }
 
         return new UserListViewModel
         {
@@ -57,12 +66,12 @@ public class UsersController : Controller
     }
 
     [HttpPost("create")]
-    public ViewResult Create(CreateUserModel input)
+    public async Task<ViewResult> Create(CreateUserModel input)
     {
         if (ModelState.IsValid)
         {
-            _userService.CreateUser(new CreateUserDTO(input.Forename, input.Surname, input.Email, input.Date));
-            var users = GetUsers(UserStateFilter.All);
+            await _userService.CreateUser(new CreateUserDTO(input.Forename, input.Surname, input.Email, input.Date));
+            var users = GetUsers();
             return View("List", users);
         }
 
@@ -70,9 +79,9 @@ public class UsersController : Controller
     }
 
     [HttpGet]
-    public ViewResult Edit(long id)
+    public async Task<ViewResult> Edit(long id)
     {
-        var user = _userService.GetUser(id);
+        var user = await _userService.GetUser(id);
         var model = new UpdateUserModel { Id = id};
         if(user is not null)
         {
@@ -84,26 +93,27 @@ public class UsersController : Controller
     }
 
     [HttpGet, Route("View")]
-    public ViewResult View(long id)
+    public async Task<ViewResult> View(long id)
     {
-        var user = _userService.GetUser(id);
+        var user = await _userService.GetUser(id);
         var model = new UserListItemViewModel { Id = id };
         if (user is not null)
         {
             model.Forename = user.Forename;
             model.Surname = user.Surname;
             model.Email = user.Email;
+            model.DOB = user.DateOfBirth.ToString();
         }
         return View(model);
     }
 
     [HttpPost]
-    public ViewResult Edit(UpdateUserModel input)
+    public async Task<ViewResult> Edit(UpdateUserModel input)
     {
         if(ModelState.IsValid)
         {
-            _userService.UpdateUser(new UpdateUserDTO(input.Forename, input.Surname, input.Email, input.Date, input.Id));
-            var users = GetUsers(UserStateFilter.All);
+            await _userService.UpdateUser(new UpdateUserDTO(input.Forename, input.Surname, input.Email, input.Date, input.Id));
+            var users = GetUsers();
             return View("List", users);
         }
 
@@ -114,7 +124,7 @@ public class UsersController : Controller
     public ViewResult DeleteUser(long id)
     {
         _userService.DeleteUser(id);
-        var users = GetUsers(UserStateFilter.All);
+        var users = GetUsers();
         return View("List", users);
     }
 }

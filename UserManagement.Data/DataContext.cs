@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using UserManagement.Models;
 
@@ -29,6 +30,8 @@ public class DataContext : DbContext, IDataContext
 
     public DbSet<User>? Users { get; set; }
 
+    public DbSet<ActivityLog>? ActivityLogs { get; set; }
+
     public IQueryable<TEntity> GetAll<TEntity>() where TEntity : class
         => base.Set<TEntity>();
 
@@ -38,9 +41,20 @@ public class DataContext : DbContext, IDataContext
         SaveChanges();
     }
 
+    public async Task CreateAsync<TEntity>(TEntity entity) where TEntity : class
+    {
+        await base.AddAsync(entity);
+        await SaveChangesAsync();
+    }
+
     public TEntity? Get<TEntity>(long id) where TEntity : class
     {
         return base.Find<TEntity>(id);
+    }
+
+    public async Task<TEntity?> GetAsync<TEntity>(long id) where TEntity : class
+    {
+        return await base.FindAsync<TEntity>(id);
     }
 
     public new void Update<TEntity>(TEntity entity) where TEntity : class
@@ -49,9 +63,21 @@ public class DataContext : DbContext, IDataContext
         SaveChanges();
     }
 
+    public async Task UpdateAsync<TEntity>(TEntity entity) where TEntity : class
+    {
+        base.Update(entity);
+        await SaveChangesAsync();
+    }
+
     public void Delete<TEntity>(TEntity entity) where TEntity : class
     {
         base.Remove(entity);
         SaveChanges();
+    }
+
+    public async Task DeleteAsync<TEntity>(TEntity entity) where TEntity : class
+    {
+        base.Remove(entity);
+        await SaveChangesAsync();
     }
 }

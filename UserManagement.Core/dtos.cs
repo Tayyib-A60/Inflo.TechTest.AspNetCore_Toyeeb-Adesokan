@@ -18,6 +18,14 @@ public class CreateUserDTO
     }
 }
 
+public record ActivityLogDTO
+{
+    public string RequestId { get; set; } = default!;
+    public string Path { get; set; } = default!;
+    public string Method { get; set; } = default!;
+    public int ResponseStatusCode { get; set; } = default!;
+}
+
 public class UpdateUserDTO : CreateUserDTO
 {
     [Required]
